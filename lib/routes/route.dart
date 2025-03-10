@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:learn_getx_flutter/pages/counter_page.dart';
 
 import '../pages/about_page.dart';
 import '../pages/contact_page.dart';
@@ -13,12 +14,18 @@ final allPage = [
     name: '/about',
     page: () => const AboutPage(),
     // hieu ung chuyen screen
-    transition: Transition.leftToRight,
+    // transition: Transition.leftToRight,
   ),
   GetPage(
     name: '/contact',
     page: () => const ContactPage(),
     // hieu ung chuyen screen
-    transition: Transition.rightToLeft,
+    // transition: Transition.rightToLeft,
+  ),
+  GetPage(
+    name: '/counter',
+    page: () => const CounterPage(),
+    // hieu ung chuyen screen
+    // transition: Transition.rightToLeft,
   ),
 ];

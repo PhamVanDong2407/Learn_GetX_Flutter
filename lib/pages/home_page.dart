@@ -49,21 +49,27 @@ class _SnackbarGetxState extends State<SnackbarGetx> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // Get.toNamed('/about');
-                          Get.offAllNamed('/about');
+                          Get.toNamed('/about'); // se luu lai man hinh cu
+                          // Get.offAllNamed('/about'); // khong luu lai man hinh cu
                         },
                         child: const Text('About Page'),
                       ),
                       const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: () {
-                          // Get.toNamed('/about');
-                          Get.offAllNamed('/contact');
+                          Get.toNamed('/about');
+                          // Get.offAllNamed('/contact');
                         },
                         child: const Text('Contact Page'),
                       ),
                     ],
-                  )
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.toNamed('/counter');
+                    },
+                    child: const Text('Counter Page'),
+                  ),
                 ],
               ),
             ],
