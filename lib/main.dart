@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:learn_getx_flutter/pages/about_page.dart';
 import 'package:learn_getx_flutter/pages/contact_page.dart';
 import 'package:learn_getx_flutter/pages/home_page.dart';
+import 'package:learn_getx_flutter/pages/to_do_page.dart';
 import 'package:learn_getx_flutter/routes/route.dart';
 
 void main() {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
       ),
       getPages: allPage,
-      home: const SnackbarGetx(),
+      home: const ToDoPage(),
     );
   }
 }
