@@ -12,25 +12,65 @@ class ToDoApi_Controller extends GetxController {
     getTodo();
   }
 
+  // Lấy danh sách todos
   Future<void> getTodo() async {
-    // Gửi yêu cầu GET đến API
     final response = await http.get(Uri.parse("https://67cea20a125cd5af757b4f1b.mockapi.io/api/todolist"));
 
-    // Kiểm tra mã trạng thái của phản hồi
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body.toString());
-
-      // Tạo danh sách ToDoModel mới từ dữ liệu trả về
       List<ToDoModel> newList = [];
       for (Map<String, dynamic> index in data) {
         newList.add(ToDoModel.fromJson(index));
       }
-
-      // Cập nhật TodoList với danh sách mới
       TodoList.value = newList;
     } else {
-      // Xử lý khi có lỗi hoặc phản hồi không thành công
       print('Không thể tải dữ liệu');
+    }
+  }
+
+  // Thêm một ToDo mới
+  Future<void> addToDo(String title) async {
+    final response = await http.post(
+      Uri.parse("https://67cea20a125cd5af757b4f1b.mockapi.io/api/todolist"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"title": title}),
+    );
+
+    if (response.statusCode == 201) {
+      // Gọi lại getTodo() để làm mới danh sách
+      getTodo();
+    } else {
+      print('Không thể thêm ToDo');
+    }
+  }
+
+  // Cập nhật thông tin ToDo
+  Future<void> updateToDo(String id, String title) async {
+    final response = await http.put(
+      Uri.parse("https://67cea20a125cd5af757b4f1b.mockapi.io/api/todolist/$id"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"title": title}),
+    );
+
+    if (response.statusCode == 200) {
+      // Gọi lại getTodo() để làm mới danh sách
+      getTodo();
+    } else {
+      print('Không thể cập nhật ToDo');
+    }
+  }
+
+  // Xóa một ToDo
+  Future<void> deleteToDo(String id) async {
+    final response = await http.delete(
+      Uri.parse("https://67cea20a125cd5af757b4f1b.mockapi.io/api/todolist/$id"),
+    );
+
+    if (response.statusCode == 200) {
+      // Gọi lại getTodo() để làm mới danh sách
+      getTodo();
+    } else {
+      print('Không thể xóa ToDo');
     }
   }
 }

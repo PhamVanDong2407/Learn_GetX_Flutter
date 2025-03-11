@@ -29,7 +29,7 @@ class ToDoPage extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            addNewToDo(textEditingController);
+            addNewToDo(textEditingController, toDoApi_Controller);
           },
           child: const Row(
             mainAxisSize: MainAxisSize.min,
@@ -70,7 +70,6 @@ class ToDoPage extends StatelessWidget {
               Expanded(
                 child: Obx(
                   () {
-                    // Kiểm tra nếu TodoList rỗng
                     if (toDoApi_Controller.TodoList.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     } else {
@@ -103,7 +102,7 @@ class ToDoPage extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 10),
                                     Text(
-                                      todo.title ?? 'Chưa có tiêu đề!', // Giả sử "task" là trường trong ToDoModel
+                                      todo.title ?? 'Chưa có tiêu đề!',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
@@ -116,21 +115,79 @@ class ToDoPage extends StatelessWidget {
                                   children: [
                                     IconButton(
                                       onPressed: () {
-                                        // Logic để sửa task
+                                        textEditingController.text = todo.title ?? '';
+                                        Get.defaultDialog(
+                                          title: 'Update Task',
+                                          content: Column(
+                                            children: [
+                                              TextFormField(
+                                                controller: textEditingController,
+                                                decoration: const InputDecoration(
+                                                  hintText: 'Enter Task...',
+                                                  border: OutlineInputBorder(),
+                                                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  OutlinedButton(
+                                                    onPressed: () {
+                                                      Get.back();
+                                                    },
+                                                    style: OutlinedButton.styleFrom(
+                                                      side: const BorderSide(color: Colors.deepPurple),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                    ),
+                                                    child: const Text('Cancel',
+                                                        style: TextStyle(color: Colors.deepPurple)),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      if (todo.id != null) {
+                                                        toDoApi_Controller.updateToDo(
+                                                            todo.id ?? "", textEditingController.text);
+                                                        Get.back();
+                                                      } else {
+                                                        Get.snackbar(
+                                                            'Lỗi', 'Không thể cập nhật task này vì không có ID',
+                                                            snackPosition: SnackPosition.BOTTOM,
+                                                            backgroundColor: Colors.red,
+                                                            colorText: Colors.white);
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.deepPurple,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                    ),
+                                                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        );
                                       },
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white,
-                                      ),
+                                      icon: const Icon(Icons.edit, color: Colors.white),
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        // Logic để xóa task
+                                        if (todo.id != null) {
+                                          toDoApi_Controller.deleteToDo(todo.id ?? "");
+                                        } else {
+                                          Get.snackbar('Lỗi', 'Không thể xóa task này vì không có ID',
+                                              snackPosition: SnackPosition.BOTTOM,
+                                              backgroundColor: Colors.red,
+                                              colorText: Colors.white);
+                                        }
                                       },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
+                                      icon: const Icon(Icons.delete, color: Colors.white),
                                     ),
                                   ],
                                 ),
@@ -150,10 +207,9 @@ class ToDoPage extends StatelessWidget {
     );
   }
 
-  void addNewToDo(TextEditingController textEditingController) {
+  void addNewToDo(TextEditingController textEditingController, ToDoApi_Controller toDoApi_Controller) {
     Get.defaultDialog(
       title: 'Enter new Task',
-      titleStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       content: Column(
         children: [
           TextFormField(
@@ -178,16 +234,19 @@ class ToDoPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.deepPurple),
-                ),
+                child: const Text('Cancel', style: TextStyle(color: Colors.deepPurple)),
               ),
               const SizedBox(width: 10),
               ElevatedButton(
                 onPressed: () {
-                  print(textEditingController.text); // Lưu task vào cơ sở dữ liệu ở đây
-                  Get.back();
+                  if (textEditingController.text.isNotEmpty) {
+                    toDoApi_Controller.addToDo(textEditingController.text);
+                    textEditingController.clear();
+                    Get.back();
+                  } else {
+                    Get.snackbar('Lỗi', 'Vui lòng nhập nội dung task',
+                        snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
@@ -195,12 +254,7 @@ class ToDoPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
+                child: const Text('Save', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
